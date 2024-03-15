@@ -1,10 +1,17 @@
 const { Events } = require('discord.js');
-const { mockList } = require('../config.json');
+const { mockChannelId, botConfigs } = require('../config.json');
 
 module.exports = {
 	name: Events.MessageCreate,
 	async execute(message) {
-		if (mockList.includes(message.author.id)) {
+		// Dont reply to ourselves
+		for (const botConfig of botConfigs) {
+			if (message.author.id === botConfig.clientId) {
+				return
+			}
+		}
+
+		if (message.channelId === mockChannelId) {
 			message.reply(message.content.toLowerCase()
 				.split('')
 				.map((c) => {

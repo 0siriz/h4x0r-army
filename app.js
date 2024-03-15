@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
 const { botConfigs } = require('./config.json');
 
 const clients = new Map()
@@ -16,7 +16,10 @@ for (const botConfig of botConfigs) {
 			GatewayIntentBits.GuildMessages,
 			GatewayIntentBits.MessageContent,
 			GatewayIntentBits.GuildMembers
-		]
+		],
+		presence: {
+			activities: [{ name: 'CTF', type: ActivityType.Competing }]
+		}
 	});
 
 	clients.set(botConfig.token, client)
