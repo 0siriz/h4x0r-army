@@ -7,7 +7,7 @@ module.exports = (client, exceptions = []) => {
 
 	const commandCategories = [
 		...getAllFiles(path.join(__dirname, '..', 'commands'), true),
-		...getAllFiles(path.join(getBotFolder(client.user.id)), true)
+		...getAllFiles(path.join(getBotFolder(client.user.id), 'commands'), true)
 	];
 
 	for (const commandCategory of commandCategories) {
