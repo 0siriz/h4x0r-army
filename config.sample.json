@@ -1,12 +1,4 @@
 {
-	"botConfigs": [
-		{
-			"name": "",
-			"shortName": "",
-			"token": "",
-			"clientId": ""
-		}
-	],
-	"guildId": "",
-	"mockChannelId": ""
+	"testServerId": "",
+	"devs": [""]
 }
