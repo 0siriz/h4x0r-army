@@ -1,4 +1,11 @@
 {
-	"testServerId": "",
-	"devs": [""]
+	"testServerId": "<server id>",
+	"devs": ["<user id>"],
+	"bots": [
+		{
+			"name": "<bot name>",
+			"clientId": "<client id>",
+			"token": "<token>"
+		} 
+	]
 }

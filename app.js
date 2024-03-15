@@ -1,20 +1,11 @@
-const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits } = require('discord.js');
 const eventHandler = require('./handlers/eventHandler');
-const getAllFiles = require('./utils/getAllFiles');
-const getBotFolders = require('./utils/getBotFolders');
+const { bots } = require('./config.json');
 
 const botClients = new Map()
 
-const botFolders = getBotFolders();
-
-for (const botFolder of botFolders) {
-	const botName = botFolder.replace(/\\/g, '/').split('/').pop();
-	const filePath = path.join(botFolder, 'config.json');
-	const { token, clientId } = require(filePath);
-
-
+for (const bot of bots) {
 	const client = new Client({
 		intents: [
 			GatewayIntentBits.Guilds,
@@ -24,9 +15,9 @@ for (const botFolder of botFolders) {
 		]
 	});
 
-	botClients.set(botName, client);
+	botClients.set(bot.name, client);
 	
-	eventHandler(client, clientId);
+	eventHandler(client, bot.clientId);
 	
-	client.login(token);
+	client.login(bot.token);
 }

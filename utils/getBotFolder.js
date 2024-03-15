@@ -1,15 +1,15 @@
 const path = require('path');
-const getBotFolders = require('./getBotFolders');
+const { bots } = require('../config.json');
 
 module.exports = (targetId) => {
-	const botFolders = getBotFolders();
-	for (const botFolder of botFolders) {
-		const filePath = path.join(botFolder, 'config.json')
-		const { clientId } = require(filePath);
+	botsPath = path.join(__dirname, '..', 'bots');
 
-		if (clientId === targetId) {
-			return botFolder;
-		}
-	}
-	return null;
+	const bot = bots.find(
+		(b) => b.clientId === targetId
+	);
+
+	botFolder = path.join(botsPath, bot.name);
+
+	return botFolder;
+
 };
