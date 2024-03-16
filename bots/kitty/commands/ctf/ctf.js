@@ -1,17 +1,19 @@
-const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandOptionType, ChannelType } = require('discord.js');
+const createChannel = require('../../../../utils/createChannel');
+const { ctfActiveName, ctfPlayerRoleId } = require('../../../../config.json');
 
 module.exports = {
 	name: 'ctf',
-	description: 'Handles ctfs',
+	description: 'Handle CTFs',
 	options: [
 		{
 			name: 'add',
-			description: 'Adds a new CTF',
+			description: 'Add a CTF',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: "name",
-					description: "Name of CTF",
+					description: "Name of the CTF",
 					type: ApplicationCommandOptionType.String,
 					required: true
 				}
@@ -22,12 +24,12 @@ module.exports = {
 	callback: async (client, interaction) => {
 		await interaction.deferReply();
 
-		const reply = await interaction.fetchReply();
-
-		const ctfEmbed = new EmbedBuilder()
-			.setColor(0xff0000)
-			.setTitle('Not Implemented')
-
-		interaction.editReply({ embeds: [ctfEmbed] });
+		if (interaction.options.getSubcommand() == 'add') {
+			const name = interaction.options.getString('name');
+			await createChannel(interaction.member.guild, name, ctfActiveName, [ctfPlayerRoleId]);
+			interaction.editReply(`CTF added: ${name}`);
+		} else {
+			interaction.editReply(`Unknown subcommmand ${interaction.options.getSubcommand()}`);
+		}
 	}
 };

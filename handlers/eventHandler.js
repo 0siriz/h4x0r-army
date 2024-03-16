@@ -1,6 +1,6 @@
 const path = require('path');
 const getAllFiles = require("../utils/getAllFiles");
-const getBotFolder = require("../utils/getBotFolder")
+const getBotFolder = require("../utils/getBotFolder");
 
 module.exports = (client, clientId) => {
 	const eventFolders = [

@@ -7,36 +7,40 @@ const Categories = {
 	Forensics: 'forensics',
 	Rev: 'rev',
 	Misc: 'misc',
+	Blockchain: 'blockchain',
+	Hardware: 'hardware',
 	Other: 'other'
 }
 
 module.exports = {
 	name: 'challenge',
-	description: 'Handles ctf challenges',
+	description: 'Handle CTF challenges',
 	options: [
 		{
 			name: 'add',
-			description: 'Adds a new challenge',
+			description: 'Add a challenge to a CTF',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'category',
-					description: 'Category of challenge',
+					description: 'The category of the challenge',
 					type: ApplicationCommandOptionType.String,
 					choices: [
 						{ name: 'Web', value: Categories.Web},
 						{ name: 'Pwn', value: Categories.Pwn},
-						{ name: 'Crypto', value:  Categories.Crypto},
-						{ name: 'Forensics', value:  Categories.Forensics},
-						{ name: 'Rev', value:  Categories.Rev},
-						{ name: 'Misc', value:  Categories.Misc},
-						{ name: 'Other', value:  Categories.Other}
+						{ name: 'Crypto', value: Categories.Crypto},
+						{ name: 'Forensics', value: Categories.Forensics},
+						{ name: 'Rev', value: Categories.Rev},
+						{ name: 'Misc', value: Categories.Misc},
+						{ name: 'Blockchain', value: Categories.Blockchain},
+						{ name: 'Hardware', value: Categories.Hardware},
+						{ name: 'Other', value: Categories.Other}
 					],
 					required: true
 				},
 				{
 					name: 'name',
-					description: 'Name of the challenge',
+					description: 'The name of the challenge',
 					type: ApplicationCommandOptionType.String,
 					required: true
 				}
@@ -59,8 +63,6 @@ module.exports = {
 	
 	callback: async (client, interaction) => {
 		await interaction.deferReply();
-
-		const reply = await interaction.fetchReply();
 
 		const ctfEmbed = new EmbedBuilder()
 			.setColor(0xff0000)

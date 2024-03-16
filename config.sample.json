@@ -1,11 +1,28 @@
 {
-	"testServerId": "<server id>",
-	"devs": ["<user id>"],
+	"testServerId": "",
+	"devs": [""],
 	"bots": [
 		{
-			"name": "<bot name>",
-			"clientId": "<client id>",
-			"token": "<token>"
-		} 
-	]
+			"name": "kitty",
+			"clientId": "",
+			"token": ""
+		},
+		{
+			"name": "doggo",
+			"clientId": "",
+			"token": ""
+		},
+		{
+			"name": "bunno",
+			"clientId": "",
+			"token": ""
+		},
+		{
+			"name": "fred",
+			"clientId": "",
+			"token": ""
+		}
+	],
+	"ctfActiveName": "Current CTFs",
+	"ctfPlayerRoleId": ""
 }
