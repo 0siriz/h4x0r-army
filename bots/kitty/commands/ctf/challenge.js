@@ -1,4 +1,7 @@
-const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
+const getCategory = require('../../../../utils/getCategory');
+const createChannel = require('../../../../utils/createChannel');
+const { ctfActiveName, ctfActiveChallengeName, ctfCompletedChallengeName, ctfPlayerRoleId } = require('../../../../config.json');
 
 const Categories = {
 	Web: 'web',
@@ -64,10 +67,23 @@ module.exports = {
 	callback: async (client, interaction) => {
 		await interaction.deferReply();
 
-		const ctfEmbed = new EmbedBuilder()
-			.setColor(0xff0000)
-			.setTitle('Not Implemented')
+		const guild = interaction.member.guild;
 
-		interaction.editReply({ embeds: [ctfEmbed] });
+		if (interaction.options.getSubcommand() === 'add') {
+			const category = interaction.options.getString('category');
+			const name = interaction.options.getString('name');
+			const activeCtfCategory = await getCategory(guild, ctfActiveName);
+			const ctfChannel = guild.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
+			if (ctfChannel === undefined) {
+				interaction.editReply(`This command must be called from a CTF Channel`)
+				return;
+			}
+
+			const challengeName = `${ctfChannel.name}_${category}-${name}`;
+
+			const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfPlayerRoleId]);
+
+			interaction.editReply(`Challenge <#${createdChallenge.id}> added`);
+		}
 	}
 };

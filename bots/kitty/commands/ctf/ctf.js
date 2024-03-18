@@ -26,8 +26,8 @@ module.exports = {
 
 		if (interaction.options.getSubcommand() == 'add') {
 			const name = interaction.options.getString('name');
-			await createChannel(interaction.member.guild, name, ctfActiveName, [ctfPlayerRoleId]);
-			interaction.editReply(`CTF added: ${name}`);
+			const createdCtf = await createChannel(interaction.member.guild, name, ctfActiveName, [ctfPlayerRoleId]);
+			interaction.editReply(`CTF added: <#${createdCtf.id}>`);
 		} else {
 			interaction.editReply(`Unknown subcommmand ${interaction.options.getSubcommand()}`);
 		}

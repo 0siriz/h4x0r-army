@@ -24,5 +24,7 @@
 		}
 	],
 	"ctfActiveName": "Current CTFs",
+	"ctfActiveChallengeName": "Active Challenges",
+	"ctfCompletedChallengeName": "Completed Challenges",
 	"ctfPlayerRoleId": ""
 }
