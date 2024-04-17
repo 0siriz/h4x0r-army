@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, MessageMentions: { users } } = require('discord.js');
 const getCategory = require('../../../../utils/getCategory');
 const createChannel = require('../../../../utils/createChannel');
 const { ctfActiveName, ctfActiveChallengeName, ctfCompletedChallengeName, ctfPlayerRoleId } = require('../../../../config.json');
@@ -75,7 +75,7 @@ module.exports = {
 			const activeCtfCategory = await getCategory(guild, ctfActiveName);
 			const ctfChannel = guild.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
 			if (ctfChannel === undefined) {
-				interaction.editReply(`This command must be called from a CTF Channel`)
+				interaction.editReply(`This command must be called from a CTF Channel`);
 				return;
 			}
 
@@ -84,6 +84,30 @@ module.exports = {
 			const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfPlayerRoleId]);
 
 			interaction.editReply(`Challenge <#${createdChallenge.id}> added`);
+		} else if (interaction.options.getSubcommand() === 'done') {
+			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
+			const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
+			const challengeChannel = guild.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
+			if (challengeChannel === undefined) {
+				interaction.editReply(`This command must be called from a Challenge Channel`);
+				return;
+			}
+
+			challengeChannel.setParent(completedChallengeCategory, {lockPermissions: false});
+
+			let usersString = `<@${interaction.user.id}>`;
+			const credit = interaction.options.getString('credit');
+			const chalName = interaction.channel.name.split('_')[1];
+			if (credit) {
+				const others = credit.match(users);
+				if (others) {
+					usersString = `${usersString}, ${others.input.split(' ').join(', ')}`;
+				}
+			}
+			const ctfName = interaction.channel.name.split('_')[0];
+			const ctfChannel = guild.channels.cache.find((c) => c.name === ctfName);
+			interaction.editReply(`** Challenge completed by ${usersString} :tada: **`);
+			ctfChannel.send(`** Challenge ${chalName} completed by ${usersString} :tada: **`);
 		}
 	}
 };
