@@ -11,7 +11,7 @@
     "url": "https://gitea.osiriz.xyz/osiriz/h4x0r-army"
   },
   "author": "Osiriz",
-  "license": "ISC",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "discord.js": "^14.14.1"
   }
