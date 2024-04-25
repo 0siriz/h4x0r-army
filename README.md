@@ -18,4 +18,5 @@ At the moment only kitty has some actual functionality, but the other bots will 
 
 ## Credit and Inspiration
 General handling of events and commands inspired by Under Ctrl's [discordjs v14 series](https://github.com/notunderctrl/discordjs-v14-series)
+
 CTF functionality inspired by [Limgrisen](https://github.com/Jutlandia/Limgrisen).
