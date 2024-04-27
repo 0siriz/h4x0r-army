@@ -96,16 +96,19 @@ module.exports = {
 			const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfPlayerRoleId]);
 
 			interaction.editReply(`Challenge <#${createdChallenge.id}> added`);
-			createdChallenge.send(`Challenge started by <@${interaction.user.id}>`);
+			
+			let challengeText = `Challenge started by <@${interaction.user.id}>`;
 
 			const challengeDescription = interaction.options.getString('description');
 			if (challengeDescription) {
-				createdChallenge.send(`**Challenge Description:**\n${challengeDescription}`);
+				challengeText = `${challengeText}\n**Challenge Description:**\n${challengeDescription}`
 			}
 
 			const challengeFile = interaction.options.getAttachment('file');
 			if (challengeFile) {
-				createdChallenge.send({files: [ challengeFile ]});
+				createdChallenge.send(`${challengeText}\n**Challenge File:**`, {files: [ challengeFile ]});
+			} else {
+				createdChallenge.send(`${challengeText}`);
 			}
 
 		} else if (interaction.options.getSubcommand() === 'done') {
