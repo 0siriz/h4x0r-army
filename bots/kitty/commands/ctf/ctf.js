@@ -33,7 +33,7 @@ module.exports = {
 		const guild = interaction.member.guild;
 
 		if (interaction.options.getSubcommand() == 'add') {
-			const name = interaction.options.getString('name');
+			const name = interaction.options.getString('name').replaceAll(' ', '');
 			const createdCtf = await createChannel(guild, name, ctfActiveName, [ctfPlayerRoleId]);
 			interaction.editReply(`CTF added: <#${createdCtf.id}>`);
 		} else if (interaction.options.getSubcommand() == "done") {

@@ -1,3 +1,5 @@
+const { ApplicationCommandOptionType } = require('discord.js');
+
 module.exports = (existingCommand, localCommand) => {
 	const areChoicesDifferent = (existingChoices, localChoices) => {
 		for (const localChoice of localChoices) {
@@ -26,10 +28,16 @@ module.exports = (existingCommand, localCommand) => {
 				return true;
 			}
 
+			if (localOption.type === ApplicationCommandOptionType.Subcommand && 'options' in localOption && 'options' in existingOption) {
+				if (areOptionsDifferent(existingOption.options, localOption.options)) {
+					return true;
+				}
+			}
+
 			if (
 				localOption.description !== existingOption.description ||
 				localOption.type !== existingOption.type ||
-				(localOption.required || undefined) !== existingOption.required ||
+				(localOption.required) !== existingOption.required ||
 				(localOption.choices?.length || 0) !== (existingOption.choices?.length || 0) ||
 				areChoicesDifferent(
 						localOption.choices || [],

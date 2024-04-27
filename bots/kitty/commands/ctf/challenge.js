@@ -46,6 +46,18 @@ module.exports = {
 					description: 'The name of the challenge',
 					type: ApplicationCommandOptionType.String,
 					required: true
+				},
+				{
+					name: 'description',
+					description: 'The challenge description',
+					type: ApplicationCommandOptionType.String,
+					required: false
+				},
+				{
+					name: 'file',
+					description: 'Challenge file',
+					type: ApplicationCommandOptionType.Attachment,
+					required: false
 				}
 			]
 		},
@@ -84,6 +96,7 @@ module.exports = {
 			const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfPlayerRoleId]);
 
 			interaction.editReply(`Challenge <#${createdChallenge.id}> added`);
+			createdChallenge.send(`Challenge started by <@${interaction.user.id}>`);
 		} else if (interaction.options.getSubcommand() === 'done') {
 			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
 			const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
