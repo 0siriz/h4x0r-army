@@ -97,6 +97,17 @@ module.exports = {
 
 			interaction.editReply(`Challenge <#${createdChallenge.id}> added`);
 			createdChallenge.send(`Challenge started by <@${interaction.user.id}>`);
+
+			const challengeDescription = interaction.options.getString('description');
+			if (challengeDescription) {
+				createdChallenge.send(`**Challenge Description:**\n${challengeDescription}`);
+			}
+
+			const challengeFile = interaction.options.getAttachment('file');
+			if (challengeFile) {
+				createdChallenge.send({files: [ challengeFile ]});
+			}
+
 		} else if (interaction.options.getSubcommand() === 'done') {
 			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
 			const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
@@ -110,7 +121,7 @@ module.exports = {
 
 			let usersString = `<@${interaction.user.id}>`;
 			const credit = interaction.options.getString('credit');
-			const chalName = interaction.channel.name.split('_')[1];
+			const challengeName = interaction.channel.name.split('_')[1];
 			if (credit) {
 				const others = credit.match(users);
 				if (others) {
@@ -120,7 +131,7 @@ module.exports = {
 			const ctfName = interaction.channel.name.split('_')[0];
 			const ctfChannel = guild.channels.cache.find((c) => c.name === ctfName);
 			interaction.editReply(`**Challenge completed by ${usersString} :tada:**`);
-			ctfChannel.send(`**Challenge ${chalName} completed by ${usersString} :tada:**`);
+			ctfChannel.send(`**Challenge ${challengeName} completed by ${usersString} :tada:**`);
 		}
 	}
 };
