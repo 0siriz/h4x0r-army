@@ -56,10 +56,10 @@ module.exports = {
 
 			challengeChannels.forEach((c) => {
 				c.setParent(archiveCategory, {lockPermissions: false});
-				c.send(`Challenge has been archived`);
+				c.send(`**Challenge has been archived**`);
 			});
 
-			interaction.editReply(`CTF has been archived`);
+			interaction.editReply(`**CTF has been archived**`);
 
 		} else {
 			interaction.editReply(`Unknown subcommmand ${interaction.options.getSubcommand()}`);

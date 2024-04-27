@@ -5,15 +5,20 @@ A collection of hacking animal discord bots to host and collaborate on CTFs.
 At the moment only kitty has some actual functionality, but the other bots will have things to do in the future.
 
 ## Bot functionality
+- General / across bots
+	- [x] Ping Command
+	- [ ] Database
 - Kitty (Main CTF bot)
 	- [x] Create CTFs
 	- [x] Create CTF Challenges
 	- [x] Mark CTF Challenges as done
-	- [x] Archive CTF
+	- [x] Archive CTFs
 	- [ ] Track which users are solving which challenges
 - Doggo (Admin bot)
 	- [ ] Administrate which role(s) can see CTFs and challenges
-- Bunno (Not assigned a role yet)
+- Bunno (Leveling bot)
+	- [ ] See user level
+	- [ ] Award XP for solving (or co-solving) challenges
 - Fred (Not assigned a role yet)
 
 ## Credit and Inspiration

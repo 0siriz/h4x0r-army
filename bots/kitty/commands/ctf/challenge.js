@@ -106,8 +106,8 @@ module.exports = {
 			}
 			const ctfName = interaction.channel.name.split('_')[0];
 			const ctfChannel = guild.channels.cache.find((c) => c.name === ctfName);
-			interaction.editReply(`** Challenge completed by ${usersString} :tada: **`);
-			ctfChannel.send(`** Challenge ${chalName} completed by ${usersString} :tada: **`);
+			interaction.editReply(`**Challenge completed by ${usersString} :tada:**`);
+			ctfChannel.send(`**Challenge ${chalName} completed by ${usersString} :tada:**`);
 		}
 	}
 };
