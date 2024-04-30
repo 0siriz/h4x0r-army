@@ -73,12 +73,43 @@ module.exports = {
 					required: false
 				}
 			]
+		},
+		{
+			name: 'assignment',
+			description: 'Control assignment on challenge',
+			type: ApplicationCommandOptionType.SubcommandGroup,
+			options: [
+				{
+					name: 'assign',
+					description: 'Assign this challenge to me or someone else',
+					type: ApplicationCommandOptionType.Subcommand,
+					options: [
+						{
+							name: 'user',
+							description: 'User to assign',
+							type: ApplicationCommandOptionType.User,
+							required: false
+						}
+					]
+				},
+				{
+					name: 'unassign',
+					description: 'Unassign me or someone else from this challenge',
+					type: ApplicationCommandOptionType.Subcommand,
+					options: [
+						{
+							name: 'user',
+							description: 'User to unassign',
+							type: ApplicationCommandOptionType.User,
+							required: false
+						}
+					]
+				}
+			]
 		}
 	],
 	
 	callback: async (client, interaction) => {
-		await interaction.deferReply();
-
 		const guild = interaction.member.guild;
 
 		if (interaction.options.getSubcommand() === 'add') {
@@ -87,7 +118,7 @@ module.exports = {
 			const activeCtfCategory = await getCategory(guild, ctfActiveName);
 			const ctfChannel = guild.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
 			if (ctfChannel === undefined) {
-				interaction.editReply(`This command must be called from a CTF Channel`);
+				interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
 				return;
 			}
 
@@ -95,7 +126,7 @@ module.exports = {
 
 			const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfPlayerRoleId]);
 
-			interaction.editReply(`Challenge <#${createdChallenge.id}> added`);
+			interaction.reply(`Challenge <#${createdChallenge.id}> added`);
 			
 			let challengeText = `Challenge started by <@${interaction.user.id}>`;
 
@@ -116,7 +147,7 @@ module.exports = {
 			const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
 			const challengeChannel = guild.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
 			if (challengeChannel === undefined) {
-				interaction.editReply(`This command must be called from a Challenge Channel`);
+				interaction.reply({ content: `This command must be called from a Challenge Channel`, ephemeral: true });
 				return;
 			}
 
@@ -133,8 +164,19 @@ module.exports = {
 			}
 			const ctfName = interaction.channel.name.split('_')[0];
 			const ctfChannel = guild.channels.cache.find((c) => c.name === ctfName);
-			interaction.editReply(`**Challenge completed by ${usersString} :tada:**`);
+			interaction.reply(`**Challenge completed by ${usersString} :tada:**`);
 			ctfChannel.send(`**Challenge ${challengeName} completed by ${usersString} :tada:**`);
+		} else if (interaction.options.getSubcommandGroup() === 'assignment') {
+			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
+			const challengeChannel = guild.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
+			if (challengeChannel === undefined) {
+				interaction.reply({ content: `This command must be called from a Challenge Channel`, ephemeral: true });
+			}
+			
+			interaction.reply({ content: `Not implemented yet`, ephemeral: true });
+
+		} else {
+			interaction.reply({ content: `Unknown subcommand ${interaction.options.getSubcommand()}`, ephemeral: true });
 		}
 	}
 };

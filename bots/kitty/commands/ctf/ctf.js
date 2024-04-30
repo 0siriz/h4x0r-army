@@ -28,19 +28,17 @@ module.exports = {
 	],
 	
 	callback: async (client, interaction) => {
-		await interaction.deferReply();
-
 		const guild = interaction.member.guild;
 
 		if (interaction.options.getSubcommand() == 'add') {
 			const name = interaction.options.getString('name').replaceAll(' ', '');
 			const createdCtf = await createChannel(guild, name, ctfActiveName, [ctfPlayerRoleId]);
-			interaction.editReply(`CTF added: <#${createdCtf.id}>`);
+			interaction.reply(`CTF added: <#${createdCtf.id}>`);
 		} else if (interaction.options.getSubcommand() == "done") {
 			const activeCtfCategory = await getCategory(guild, ctfActiveName);
 			const ctfChannel = guild.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
 			if (ctfChannel === undefined) {
-				interaction.editReply(`This command must be called from a CTF Channel`);
+				interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
 				return;
 			}
 
@@ -59,10 +57,10 @@ module.exports = {
 				c.send(`**Challenge has been archived**`);
 			});
 
-			interaction.editReply(`**CTF has been archived**`);
+			interaction.reply(`**CTF has been archived**`);
 
 		} else {
-			interaction.editReply(`Unknown subcommmand ${interaction.options.getSubcommand()}`);
+			interaction.reply({ content: `Unknown subcommmand ${interaction.options.getSubcommand()}`, ephemeral: true });
 		}
 	}
 };
