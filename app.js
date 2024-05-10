@@ -1,9 +1,14 @@
 const path = require('path');
 const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
+const mongoose = require('mongoose');
 const eventHandler = require('./handlers/eventHandler');
-const { bots } = require('./config.json');
+const { bots, mongoDBURI } = require('./config.json');
 
 const botClients = new Map()
+
+mongoose.set('strictQuery', false);
+mongoose.connect(mongoDBURI);
+console.log('Connected to the DB');
 
 for (const bot of bots) {
 	const client = new Client({
