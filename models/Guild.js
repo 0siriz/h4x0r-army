@@ -5,7 +5,7 @@ const guildSchema = new Schema({
 		type: String,
 		required: true
 	},
-	roleId: {
+	ctfRoleId: {
 		type: String,
 		default: ''
 	}

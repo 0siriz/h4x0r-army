@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
-const ctfSchema = new Schema({
-	ctfName: {
+const userSchema = new Schema({
+	userId: {
 		type: String,
 		required: true
 	},
@@ -12,4 +12,4 @@ const ctfSchema = new Schema({
 	}
 });
 
-module.exports = model('Ctf', ctfSchema);
+module.exports = model('User', userSchema);

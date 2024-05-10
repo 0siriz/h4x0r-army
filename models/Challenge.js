@@ -5,8 +5,9 @@ const challengeSchema = new Schema({
 		type: String,
 		required: true
 	},
-	ctfName: {
-		type: String,
+	ctf: {
+		type: Schema.Types.ObjectId,
+		ref: 'Ctf',
 		required: true
 	},
 	category: {
@@ -14,7 +15,8 @@ const challengeSchema = new Schema({
 		required: true
 	},
 	assignedUsers: [{
-		type: String
+		type: Schema.Types.ObjectId,
+		ref: 'User'
 	}]
 });
 
