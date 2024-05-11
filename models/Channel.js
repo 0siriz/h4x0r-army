@@ -1,13 +1,8 @@
 const { Schema, model } = require('mongoose');
 
-const ctfSchema = new Schema({
-	ctfName: {
+const channelSchema = new Schema({
+	channelId: {
 		type: String,
-		required: true
-	},
-	channel: {
-		type: Schema.Types.ObjectId,
-		ref: 'Channel',
 		required: true
 	},
 	guild: {
@@ -17,4 +12,4 @@ const ctfSchema = new Schema({
 	}
 });
 
-module.exports = model('Ctf', ctfSchema);
+module.exports = model('Channel', channelSchema);

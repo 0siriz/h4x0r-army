@@ -14,6 +14,11 @@ const challengeSchema = new Schema({
 		type: String,
 		required: true
 	},
+	channel: {
+		type: Schema.Types.ObjectId,
+		ref: 'Channel',
+		required: true
+	},
 	assignedUsers: [{
 		type: Schema.Types.ObjectId,
 		ref: 'User'
