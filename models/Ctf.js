@@ -9,11 +9,6 @@ const ctfSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Channel',
 		required: true
-	},
-	guild: {
-		type: Schema.Types.ObjectId,
-		ref: 'Guild',
-		required: true
 	}
 });
 

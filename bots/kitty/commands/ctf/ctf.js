@@ -1,7 +1,8 @@
 const { ApplicationCommandOptionType, ChannelType } = require('discord.js');
 const getCategory = require('../../../../utils/getCategory');
 const createChannel = require('../../../../utils/createChannel');
-const { ctfActiveName, ctfArchivePrefix, ctfActiveChallengeName, ctfCompletedChallengeName, ctfPlayerRoleId } = require('../../../../config.json');
+const Guild = require('../../../../models/Guild');
+const { ctfActiveName, ctfArchivePrefix, ctfActiveChallengeName, ctfCompletedChallengeName } = require('../../../../config.json');
 
 module.exports = {
 	name: 'ctf',
@@ -28,28 +29,35 @@ module.exports = {
 	],
 	
 	callback: async (client, interaction) => {
-		const guild = interaction.member.guild;
+		const guildObj = interaction.member.guild;
+		const guild = await Guild.findOne({ guildId: guildObj.id });
+
+		if (!guild) {
+			interaction.reply({ content: 'Guild is not initialized', ephemeral: true });
+			return;
+		}
 
 		if (interaction.options.getSubcommand() == 'add') {
+			const ctfRoleId = guild.ctfRoleId;
 			const name = interaction.options.getString('name').replaceAll(' ', '');
-			const createdCtf = await createChannel(guild, name, ctfActiveName, [ctfPlayerRoleId]);
+			const createdCtf = await createChannel(guildObj, name, ctfActiveName, [ctfRoleId]);
 			interaction.reply(`CTF added: <#${createdCtf.id}>`);
 		} else if (interaction.options.getSubcommand() == "done") {
-			const activeCtfCategory = await getCategory(guild, ctfActiveName);
-			const ctfChannel = guild.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
+			const activeCtfCategory = await getCategory(guildObj, ctfActiveName);
+			const ctfChannel = guildObj.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
 			if (ctfChannel === undefined) {
 				interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
 				return;
 			}
 
-			const archiveCategory = await getCategory(guild, `${ctfArchivePrefix} - ${ctfChannel.name}`);
+			const archiveCategory = await getCategory(guildObj, `${ctfArchivePrefix} - ${ctfChannel.name}`);
 
 			ctfChannel.setParent(archiveCategory, {lockPermissions: false})
 			
-			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
-			const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
+			const activeChallengeCategory = await getCategory(guildObj, ctfActiveChallengeName);
+			const completedChallengeCategory = await getCategory(guildObj, ctfCompletedChallengeName);
 
-			const challengeChannels = guild.channels.cache.filter((c) => c.name.split('_')[0] === ctfChannel.name &&
+			const challengeChannels = guildObj.channels.cache.filter((c) => c.name.split('_')[0] === ctfChannel.name &&
 					(c.parentId == activeChallengeCategory.id || c.parentId == completedChallengeCategory.id));
 
 			challengeChannels.forEach((c) => {
