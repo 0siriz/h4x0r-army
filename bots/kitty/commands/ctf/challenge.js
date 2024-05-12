@@ -1,6 +1,11 @@
 const { ApplicationCommandOptionType, MessageMentions: { users } } = require('discord.js');
 const getCategory = require('../../../../utils/getCategory');
 const createChannel = require('../../../../utils/createChannel');
+const Guild = require('../../../../models/Guild');
+const Ctf = require('../../../../models/Ctf');
+const Channel = require('../../../../models/Channel');
+const Challenge = require('../../../../models/Challenge');
+const User = require('../../../../models/User');
 const { ctfActiveName, ctfActiveChallengeName, ctfCompletedChallengeName, ctfPlayerRoleId } = require('../../../../config.json');
 
 const Categories = {
@@ -110,20 +115,20 @@ module.exports = {
 	],
 	
 	callback: async (client, interaction) => {
-		const guildObj = interaction.member.guild;
-		const guild = await Guild.findOne({ guildId: guildObj.id });
+		const guild = interaction.member.guild;
+		const guildModel = await Guild.findOne({ guildId: guild.id });
 
-		if (!guild) {
+		if (!guildModel) {
 			interaction.reply({ content: 'Guild is not initialized', ephemeral: true });
 			return;
 		}
 
 		if (interaction.options.getSubcommand() === 'add') {
-			const ctfRoleId = guild.ctfRoleId;
+			const ctfRoleId = guildModel.ctfRoleId;
 			const category = interaction.options.getString('category');
 			const name = interaction.options.getString('name');
-			const activeCtfCategory = await getCategory(guildObj, ctfActiveName);
-			const ctfChannel = guildObj.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
+			const activeCtfCategory = await getCategory(guild, ctfActiveName);
+			const ctfChannel = guild.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
 			if (ctfChannel === undefined) {
 				interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
 				return;
@@ -131,7 +136,7 @@ module.exports = {
 
 			const challengeName = `${ctfChannel.name}_${category}-${name}`;
 
-			const createdChallenge = await createChannel(guildObj, challengeName, ctfActiveChallengeName, [ctfRoleId]);
+			const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfRoleId]);
 
 			interaction.reply(`Challenge <#${createdChallenge.id}> added`);
 			
@@ -150,9 +155,9 @@ module.exports = {
 			}
 
 		} else if (interaction.options.getSubcommand() === 'done') {
-			const activeChallengeCategory = await getCategory(guildObj, ctfActiveChallengeName);
-			const completedChallengeCategory = await getCategory(guildObj, ctfCompletedChallengeName);
-			const challengeChannel = guildObj.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
+			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
+			const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
+			const challengeChannel = guild.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
 			if (challengeChannel === undefined) {
 				interaction.reply({ content: `This command must be called from a Challenge Channel`, ephemeral: true });
 				return;
@@ -170,12 +175,12 @@ module.exports = {
 				}
 			}
 			const ctfName = interaction.channel.name.split('_')[0];
-			const ctfChannel = guildObj.channels.cache.find((c) => c.name === ctfName);
+			const ctfChannel = guild.channels.cache.find((c) => c.name === ctfName);
 			interaction.reply(`**Challenge completed by ${usersString} :tada:**`);
 			ctfChannel.send(`**Challenge ${challengeName} completed by ${usersString} :tada:**`);
 		} else if (interaction.options.getSubcommandGroup() === 'assignment') {
-			const activeChallengeCategory = await getCategory(guildObj, ctfActiveChallengeName);
-			const challengeChannel = guildObj.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
+			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
+			const challengeChannel = guild.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
 			if (challengeChannel === undefined) {
 				interaction.reply({ content: `This command must be called from a Challenge Channel`, ephemeral: true });
 			}

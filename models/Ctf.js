@@ -9,6 +9,10 @@ const ctfSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Channel',
 		required: true
+	},
+	done: {
+		type: Boolean,
+		default: false
 	}
 });
 

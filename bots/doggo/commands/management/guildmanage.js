@@ -21,18 +21,18 @@ module.exports = {
 	],
 	
 	callback: async (client, interaction) => {
-		const guildObj = interaction.member.guild;
-		let guild = await Guild.findOne({ guildId: guildObj.id });
+		const guild = interaction.member.guild;
+		let guildModel = await Guild.findOne({ guildId: guild.id });
 
 		if (interaction.options.getSubcommand() === 'init') {
-			if (guild) {
+			if (guildModel) {
 				interaction.reply({ content: `Guild has already been initialized`, ephemeral: true });
 			} else {
-				guild = new Guild({
-					guildId: guildObj.id,
+				guildModel = new Guild({
+					guildId: guild.id,
 					ctfRoleId: interaction.options.getRole('ctf-role').id
 				});
-				await guild.save();
+				await guildModel.save();
 				interaction.reply({ content: `Initialized Guild`, ephemeral: true });
 			}
 		} else {

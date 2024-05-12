@@ -7,7 +7,7 @@ At the moment only kitty has some actual functionality, but the other bots will 
 ## Bot functionality
 - General / across bots
 	- [x] Ping Command
-	- [ ] Database
+	- [x] Database
 - Kitty (Main CTF bot)
 	- [x] Create CTFs
 	- [x] Create CTF Challenges
@@ -16,7 +16,8 @@ At the moment only kitty has some actual functionality, but the other bots will 
 	- [x] Write challenge description and files
 	- [ ] Track which users are solving which challenges
 - Doggo (Admin bot)
-	- [ ] Administrate which role(s) can see CTFs and challenges
+	- [x] Administrate which role(s) can see CTFs and challenges
+	- [ ] Add more settings, and change the guild management to be a bit better
 - Bunno (Leveling bot)
 	- [ ] See user level
 	- [ ] Award XP for solving (or co-solving) challenges
