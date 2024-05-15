@@ -2,8 +2,8 @@ const { ApplicationCommandOptionType, ChannelType } = require('discord.js');
 const getCategory = require('../../../../utils/getCategory');
 const createChannel = require('../../../../utils/createChannel');
 const Guild = require('../../../../models/Guild');
-const Channel = require('../../../../models/Channel');
 const Ctf = require('../../../../models/Ctf');
+const Challenge = require('../../../../models/Challenge');
 const { ctfActiveName, ctfArchivePrefix, ctfActiveChallengeName, ctfCompletedChallengeName } = require('../../../../config.json');
 
 module.exports = {
@@ -43,52 +43,44 @@ module.exports = {
 			const ctfRoleId = guildModel.ctfRoleId;
 			const name = interaction.options.getString('name').replaceAll(' ', '');
 
-			let ctfModel = await Ctf.findOne({ ctfName: name });
+			let ctfModel = await Ctf.findOne({ name: name, guild: guildModel });
 
 			if (ctfModel) {
-				const channel = await Channel.findById(ctfModel.channel);
-				interaction.reply({ content: `CTF Already exists at <#${channel.channelId}>`, ephemeral: true });
-			} else {
-				const createdCtf = await createChannel(guild, name, ctfActiveName, [ctfRoleId]);
-				const channelModel = new Channel({
-					channelId: createdCtf.id,
-					guild: guildModel
-				});
-				ctfModel = new Ctf({
-					ctfName: name,
-					channel: channelModel
-				});
-				interaction.reply(`CTF added: <#${createdCtf.id}>`);
-				await channelModel.save();
-				await ctfModel.save();
-
+				interaction.reply({ content: `CTF already exists at <#${ctfModel.channelId}>`, ephemeral: true });
+				return;
 			}
+			
+			const createdCtf = await createChannel(guild, name, ctfActiveName, [ctfRoleId]);
+			ctfModel = new Ctf({
+				name: name,
+				channelId: createdCtf.id,
+				guild: guildModel
+			});
+			interaction.reply(`CTF added: <#${createdCtf.id}>`);
+			await ctfModel.save();
+
 
 		} else if (interaction.options.getSubcommand() === "done") {
-			const channelModel = await Channel.findOne({ channelId: interaction.channelId });
+			let ctfModel = await Ctf.findOne({ guild: guildModel });
 
-			if (channelModel) {
-				const ctfModel = await Ctf.findOne({ channel: channelModel._id });
-				if (ctfModel) {
-					const ctfChannel = guild.channels.cache.find((c) => c.id == channelModel.channelId)
-					const archiveCategory = await getCategory(guild, `${ctfArchivePrefix} - ${ctfChannel.name}`);
-					ctfChannel.setParent(archiveCategory, {lockPermissions: false})
-			
-					const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
-					const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
+			if (ctfModel) {
+				const ctfChannel = guild.channels.cache.find((c) => c.id == ctfModel.channelId)
+				const archiveCategory = await getCategory(guild, `${ctfArchivePrefix} - ${ctfChannel.name}`);
+				ctfChannel.setParent(archiveCategory, {lockPermissions: false})
+	
+				let challenges = await Challenge.find({ ctf: ctfModel });
+				console.log(challenges)
 
-					const challengeChannels = guild.channels.cache.filter((c) => c.name.split('_')[0] === ctfChannel.name &&
-						(c.parentId == activeChallengeCategory.id || c.parentId == completedChallengeCategory.id));
+				// const challengeChannels = guild.channels.cache.filter((c) => c);
+				//
+				// challengeChannels.forEach((c) => {
+				// 	c.setParent(archiveCategory, {lockPermissions: false});
+				// 	c.send(`**Challenge has been archived**`);
+				// });
 
-					challengeChannels.forEach((c) => {
-						c.setParent(archiveCategory, {lockPermissions: false});
-						c.send(`**Challenge has been archived**`);
-					});
-
-					interaction.reply(`**CTF has been archived**`);
-					await ctfModel.updateOne({ done: true });
-					return;
-				}
+				interaction.reply(`**CTF has been archived**`);
+				await ctfModel.updateOne({ done: true });
+				return;
 			}
 			
 			interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });

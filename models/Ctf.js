@@ -1,13 +1,17 @@
 const { Schema, model } = require('mongoose');
 
 const ctfSchema = new Schema({
-	ctfName: {
+	name: {
 		type: String,
 		required: true
 	},
-	channel: {
+	channelId: {
+		type: String,
+		required: true
+	},
+	guild: {
 		type: Schema.Types.ObjectId,
-		ref: 'Channel',
+		ref: 'Guild',
 		required: true
 	},
 	done: {

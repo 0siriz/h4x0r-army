@@ -3,7 +3,6 @@ const getCategory = require('../../../../utils/getCategory');
 const createChannel = require('../../../../utils/createChannel');
 const Guild = require('../../../../models/Guild');
 const Ctf = require('../../../../models/Ctf');
-const Channel = require('../../../../models/Channel');
 const Challenge = require('../../../../models/Challenge');
 const User = require('../../../../models/User');
 const { ctfActiveName, ctfActiveChallengeName, ctfCompletedChallengeName, ctfPlayerRoleId } = require('../../../../config.json');
@@ -127,20 +126,59 @@ module.exports = {
 			const ctfRoleId = guildModel.ctfRoleId;
 			const category = interaction.options.getString('category');
 			const name = interaction.options.getString('name');
-			const activeCtfCategory = await getCategory(guild, ctfActiveName);
-			const ctfChannel = guild.channels.cache.find((c) => c.id == interaction.channelId && c.parentId === activeCtfCategory.id);
-			if (ctfChannel === undefined) {
-				interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
+
+			const ctfModel = await Ctf.findOne({ channelId: interaction.channelId, guild: guildModel });
+
+			if (ctfModel) {
+				let challengeModel = await Challenge.findOne({ name: name, ctf: ctfModel });
+
+				if (challengeModel) {
+					interaction.reply({ content: `Challenge already exists at <#${challengeModel.channelId}>`, ephemeral: true });
+					return;
+				}
+
+				const challengeName = `${ctfModel.name}_${category}-${name}`;
+				const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfRoleId]);
+
+				let userModel = await User.findOne({ userId: interaction.user.id, guild: guildModel });
+				if (!userModel) {
+					userModel = new User({
+						userId: interaction.user.id,
+						guild: guildModel
+					});
+				}
+
+				challengeModel = new Challenge({
+					name: name,
+					category: category,
+					ctf: ctfModel,
+					channelId: createdChallenge.id,
+					assignedUsers: [userModel]
+				});
+
+				interaction.reply(`Challenge <#${createdChallenge.id}> added`);
+
+				let challengeText = `Challenge started by <@${interaction.user.id}>`;
+				
+				const challengeDescription = interaction.options.getString('description');
+				if (challengeDescription) {
+					challengeText = `${challengeText}\n**Challenge Description:**\n${challengeDescription}`
+				}
+
+				const challengeFile = interaction.options.getAttachment('file');
+				if (challengeFile) {
+					createdChallenge.send(`${challengeText}\n**Challenge File:**`, {files: [ challengeFile ]});
+				} else {
+					createdChallenge.send(`${challengeText}`);
+				}
+
+				await userModel.save();
+				await challengeModel.save();
 				return;
 			}
 
-			const challengeName = `${ctfChannel.name}_${category}-${name}`;
+			interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
 
-			const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfRoleId]);
-
-			interaction.reply(`Challenge <#${createdChallenge.id}> added`);
-			
-			let challengeText = `Challenge started by <@${interaction.user.id}>`;
 
 			const challengeDescription = interaction.options.getString('description');
 			if (challengeDescription) {

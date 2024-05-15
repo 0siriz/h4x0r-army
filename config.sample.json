@@ -27,6 +27,5 @@
 	"ctfActiveName": "Current CTFs",
 	"ctfActiveChallengeName": "Active Challenges",
 	"ctfCompletedChallengeName": "Completed Challenges",
-	"ctfArchivePrefix": "Archive",
-	"ctfPlayerRoleId": ""
+	"ctfArchivePrefix": "Archive"
 }

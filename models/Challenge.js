@@ -1,7 +1,11 @@
 const { Schema, model } = require('mongoose');
 
 const challengeSchema = new Schema({
-	challengeName: {
+	name: {
+		type: String,
+		required: true
+	},
+	category: {
 		type: String,
 		required: true
 	},
@@ -10,13 +14,8 @@ const challengeSchema = new Schema({
 		ref: 'Ctf',
 		required: true
 	},
-	category: {
+	channelId: {
 		type: String,
-		required: true
-	},
-	channel: {
-		type: Schema.Types.ObjectId,
-		ref: 'Channel',
 		required: true
 	},
 	assignedUsers: [{
