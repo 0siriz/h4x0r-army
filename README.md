@@ -21,7 +21,9 @@ At the moment only kitty has some actual functionality, but the other bots will 
 - Bunno (Leveling bot)
 	- [ ] See user level
 	- [ ] Award XP for solving (or co-solving) challenges
-- Fred (Not assigned a role yet)
+- Fred (News bot)
+	- [ ] Scrape articles from [osinter](https://osinter.dk)
+	- [ ] Format the articles as embeds
 
 ## Credit and Inspiration
 General handling of events and commands inspired by Under Ctrl's [discordjs v14 series](https://github.com/notunderctrl/discordjs-v14-series)
