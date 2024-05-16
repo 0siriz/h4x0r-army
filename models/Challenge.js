@@ -21,7 +21,11 @@ const challengeSchema = new Schema({
 	assignedUsers: [{
 		type: Schema.Types.ObjectId,
 		ref: 'User'
-	}]
+	}],
+	done: {
+		type: Boolean,
+		default: false
+	}
 });
 
 module.exports = model('Challenge', challengeSchema);

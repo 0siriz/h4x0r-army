@@ -61,30 +61,33 @@ module.exports = {
 
 
 		} else if (interaction.options.getSubcommand() === "done") {
-			let ctfModel = await Ctf.findOne({ guild: guildModel });
+			let ctfModel = await Ctf.findOne({ channelId: interaction.channelId });
 
-			if (ctfModel) {
-				const ctfChannel = guild.channels.cache.find((c) => c.id == ctfModel.channelId)
-				const archiveCategory = await getCategory(guild, `${ctfArchivePrefix} - ${ctfChannel.name}`);
-				ctfChannel.setParent(archiveCategory, {lockPermissions: false})
-	
-				let challenges = await Challenge.find({ ctf: ctfModel });
-				console.log(challenges)
-
-				// const challengeChannels = guild.channels.cache.filter((c) => c);
-				//
-				// challengeChannels.forEach((c) => {
-				// 	c.setParent(archiveCategory, {lockPermissions: false});
-				// 	c.send(`**Challenge has been archived**`);
-				// });
-
-				interaction.reply(`**CTF has been archived**`);
-				await ctfModel.updateOne({ done: true });
+			if (!ctfModel) {
+				interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
 				return;
 			}
-			
-			interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
 
+			const ctfChannel = guild.channels.cache.find((c) => c.id == ctfModel.channelId)
+			const archiveCategory = await getCategory(guild, `${ctfArchivePrefix} - ${ctfModel.name}`);
+			ctfChannel.setParent(archiveCategory, {lockPermissions: false})
+
+			const challenges = await Challenge.find({ ctf: ctfModel });
+
+			channelIds = [];
+			for (const challenge of challenges) {
+				channelIds.push(challenge.channelId);
+			}
+
+			const challengeChannels = guild.channels.cache.filter((c) => channelIds.includes(c.id));
+			
+			challengeChannels.forEach((c) => {
+			 	c.setParent(archiveCategory, {lockPermissions: false});
+			 	c.send(`**Challenge has been archived**`);
+			});
+
+			interaction.reply(`**CTF has been archived**`);
+			await ctfModel.updateOne({ done: true });
 		} else {
 			interaction.reply({ content: `Unknown subcommmand ${interaction.options.getSubcommand()}`, ephemeral: true });
 		}

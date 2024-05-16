@@ -14,7 +14,7 @@ At the moment only kitty has some actual functionality, but the other bots will 
 	- [x] Mark CTF Challenges as done
 	- [x] Archive CTFs
 	- [x] Write challenge description and files
-	- [ ] Track which users are solving which challenges
+	- [x] Track which users are solving which challenges
 - Doggo (Admin bot)
 	- [x] Administrate which role(s) can see CTFs and challenges
 	- [ ] Add more settings, and change the guild management to be a bit better

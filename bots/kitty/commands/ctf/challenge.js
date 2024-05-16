@@ -69,14 +69,7 @@ module.exports = {
 			name: 'done',
 			description: 'Marks challenge complete',
 			type: ApplicationCommandOptionType.Subcommand,
-			options: [
-				{
-					name: 'credit',
-					description: 'Credit some other people',
-					type: ApplicationCommandOptionType.String,
-					required: false
-				}
-			]
+			options: []
 		},
 		{
 			name: 'assignment',
@@ -129,57 +122,42 @@ module.exports = {
 
 			const ctfModel = await Ctf.findOne({ channelId: interaction.channelId, guild: guildModel });
 
-			if (ctfModel) {
-				let challengeModel = await Challenge.findOne({ name: name, ctf: ctfModel });
-
-				if (challengeModel) {
-					interaction.reply({ content: `Challenge already exists at <#${challengeModel.channelId}>`, ephemeral: true });
-					return;
-				}
-
-				const challengeName = `${ctfModel.name}_${category}-${name}`;
-				const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfRoleId]);
-
-				let userModel = await User.findOne({ userId: interaction.user.id, guild: guildModel });
-				if (!userModel) {
-					userModel = new User({
-						userId: interaction.user.id,
-						guild: guildModel
-					});
-				}
-
-				challengeModel = new Challenge({
-					name: name,
-					category: category,
-					ctf: ctfModel,
-					channelId: createdChallenge.id,
-					assignedUsers: [userModel]
-				});
-
-				interaction.reply(`Challenge <#${createdChallenge.id}> added`);
-
-				let challengeText = `Challenge started by <@${interaction.user.id}>`;
-				
-				const challengeDescription = interaction.options.getString('description');
-				if (challengeDescription) {
-					challengeText = `${challengeText}\n**Challenge Description:**\n${challengeDescription}`
-				}
-
-				const challengeFile = interaction.options.getAttachment('file');
-				if (challengeFile) {
-					createdChallenge.send(`${challengeText}\n**Challenge File:**`, {files: [ challengeFile ]});
-				} else {
-					createdChallenge.send(`${challengeText}`);
-				}
-
-				await userModel.save();
-				await challengeModel.save();
+			if (!ctfModel) {
+				interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
 				return;
 			}
 
-			interaction.reply({ content: `This command must be called from a CTF Channel`, ephemeral: true });
+			let challengeModel = await Challenge.findOne({ name: name, ctf: ctfModel });
 
+			if (challengeModel) {
+				interaction.reply({ content: `Challenge already exists at <#${challengeModel.channelId}>`, ephemeral: true });
+				return;
+			}
 
+			const challengeName = `${ctfModel.name}_${category}-${name}`;
+			const createdChallenge = await createChannel(guild, challengeName, ctfActiveChallengeName, [ctfRoleId]);
+
+			let userModel = await User.findOne({ userId: interaction.user.id, guild: guildModel });
+			if (!userModel) {
+				userModel = new User({
+					userId: interaction.user.id,
+					guild: guildModel
+				});
+				await userModel.save();
+			}
+
+			challengeModel = new Challenge({
+				name: name,
+				category: category,
+				ctf: ctfModel,
+				channelId: createdChallenge.id,
+				assignedUsers: [userModel]
+			});
+
+			interaction.reply(`Challenge <#${createdChallenge.id}> added`);
+
+			let challengeText = `Challenge started by <@${interaction.user.id}>`;
+				
 			const challengeDescription = interaction.options.getString('description');
 			if (challengeDescription) {
 				challengeText = `${challengeText}\n**Challenge Description:**\n${challengeDescription}`
@@ -192,38 +170,81 @@ module.exports = {
 				createdChallenge.send(`${challengeText}`);
 			}
 
+			await challengeModel.save();
+
 		} else if (interaction.options.getSubcommand() === 'done') {
-			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
-			const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
-			const challengeChannel = guild.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
-			if (challengeChannel === undefined) {
-				interaction.reply({ content: `This command must be called from a Challenge Channel`, ephemeral: true });
+
+			const challengeModel = await Challenge.findOne({ channelId: interaction.channelId });
+
+			if (!challengeModel) {
+				interaction.reply({ content: 'This command must be called from a Challenge Channel', ephemeral: true });
 				return;
 			}
 
-			challengeChannel.setParent(completedChallengeCategory, {lockPermissions: false});
+			const ctfModel = await Ctf.findById(challengeModel.ctf);
 
-			let usersString = `<@${interaction.user.id}>`;
-			const credit = interaction.options.getString('credit');
-			const challengeName = interaction.channel.name.split('_')[1];
-			if (credit) {
-				const others = credit.match(users);
-				if (others) {
-					usersString = `${usersString}, ${others.input.split(' ').join(', ')}`;
-				}
+			if (ctfModel.done) {
+				interaction.reply({ content: 'The CTF is over', ephemeral: true });
+				return;
 			}
-			const ctfName = interaction.channel.name.split('_')[0];
-			const ctfChannel = guild.channels.cache.find((c) => c.name === ctfName);
+
+			if (challengeModel.done) {
+				interaction.reply({ content: 'Challenge is already marked as done', ephemeral: true });
+				return;
+			}
+
+			const completedChallengeCategory = await getCategory(guild, ctfCompletedChallengeName);
+			interaction.channel.setParent(completedChallengeCategory, {lockPermissions: false});
+
+			let userArray = [];
+			for (const user of challengeModel.assignedUsers) {
+				const userModel = await User.findById(user);
+				userArray.push(`<@${userModel.userId}>`);
+			}
+
+			let usersString = userArray.join(', ');
+
+			const ctfChannel = guild.channels.cache.find((c) => c.id === ctfModel.channelId);
 			interaction.reply(`**Challenge completed by ${usersString} :tada:**`);
-			ctfChannel.send(`**Challenge ${challengeName} completed by ${usersString} :tada:**`);
-		} else if (interaction.options.getSubcommandGroup() === 'assignment') {
-			const activeChallengeCategory = await getCategory(guild, ctfActiveChallengeName);
-			const challengeChannel = guild.channels.cache.find((c) => c.id === interaction.channelId && c.parentId === activeChallengeCategory.id);
-			if (challengeChannel === undefined) {
-				interaction.reply({ content: `This command must be called from a Challenge Channel`, ephemeral: true });
-			}
+			ctfChannel.send(`**Challenge ${challengeModel.name} completed by ${userString} :tada:**`);
 			
-			interaction.reply({ content: `Not implemented yet`, ephemeral: true });
+			await challengeModel.updateOne({ done: true });
+
+		} else if (interaction.options.getSubcommandGroup() === 'assignment') {
+			const challengeModel = await Challenge.findOne({ channelId: interaction.channelId });
+
+			if (!challengeModel) {
+				interaction.reply({ content: 'This command must be called from a Challenge Channel', ephemeral: true })
+				return;
+			}
+
+			if (challengeModel.done) {
+				interaction.reply({ content: 'This challenge is marked as done', ephemeral: true });
+				return;
+			}
+
+			let user = interaction.options.getUser('user');
+
+			if (!user) {
+				user = interaction.user;
+			}
+
+			let userModel = await User.findOne({ userId: user.id, guild: guildModel });
+			if (!userModel) {
+				userModel = new User({
+					userId: user.id,
+					guild: guildModel
+				});
+				await userModel.save();
+			}
+
+			if (interaction.options.getSubcommand() === "assign") {
+				interaction.reply(`Assigned <@${userModel.userId}> to this challenge`);
+				await challengeModel.updateOne({ $push: { assignedUsers: userModel } });
+			} else if (interaction.options.getSubcommand() === "unassign") {
+				interaction.reply(`Unassigned <@${userModel.userId}> from this challenge`);
+				await challengeModel.updateOne({ $pull: { assignedUsers: userModel._id } });
+			}
 
 		} else {
 			interaction.reply({ content: `Unknown subcommand ${interaction.options.getSubcommand()}`, ephemeral: true });
