@@ -41,7 +41,7 @@ module.exports = {
 
 		if (interaction.options.getSubcommand() === 'add') {
 			const ctfRoleId = guildModel.ctfRoleId;
-			const name = interaction.options.getString('name').replaceAll(' ', '');
+			const name = interaction.options.getString('name').replaceAll(' ', '').toLowerCase();
 
 			let ctfModel = await Ctf.findOne({ name: name, guild: guildModel });
 

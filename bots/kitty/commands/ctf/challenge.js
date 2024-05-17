@@ -118,7 +118,7 @@ module.exports = {
 		if (interaction.options.getSubcommand() === 'add') {
 			const ctfRoleId = guildModel.ctfRoleId;
 			const category = interaction.options.getString('category');
-			const name = interaction.options.getString('name');
+			const name = interaction.options.getString('name').toLowerCase();
 
 			const ctfModel = await Ctf.findOne({ channelId: interaction.channelId, guild: guildModel });
 
