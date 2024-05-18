@@ -206,7 +206,7 @@ module.exports = {
 
 			const ctfChannel = guild.channels.cache.find((c) => c.id === ctfModel.channelId);
 			interaction.reply(`**Challenge completed by ${usersString} :tada:**`);
-			ctfChannel.send(`**Challenge ${challengeModel.name} completed by ${userString} :tada:**`);
+			ctfChannel.send(`**Challenge ${challengeModel.name} completed by ${usersString} :tada:**`);
 			
 			await challengeModel.updateOne({ done: true });
 
