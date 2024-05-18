@@ -35,3 +35,11 @@ services:
       - "ME_CONFIG_BASICAUTH=false"
     depends_on:
       - "mongo"
+  
+  bot:
+    build: .
+    restart: unless-stopped
+    networks:
+      - "internal"
+    depends_on:
+      - "mongo"
