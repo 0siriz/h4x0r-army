@@ -16,6 +16,8 @@ const Categories = {
 	Misc: 'misc',
 	Blockchain: 'blockchain',
 	Hardware: 'hardware',
+	Cloud: 'cloud',
+	Coding: 'coding',
 	Other: 'other'
 }
 
@@ -33,15 +35,17 @@ module.exports = {
 					description: 'The category of the challenge',
 					type: ApplicationCommandOptionType.String,
 					choices: [
-						{ name: 'Web', value: Categories.Web},
-						{ name: 'Pwn', value: Categories.Pwn},
-						{ name: 'Crypto', value: Categories.Crypto},
-						{ name: 'Forensics', value: Categories.Forensics},
-						{ name: 'Rev', value: Categories.Rev},
-						{ name: 'Misc', value: Categories.Misc},
-						{ name: 'Blockchain', value: Categories.Blockchain},
-						{ name: 'Hardware', value: Categories.Hardware},
-						{ name: 'Other', value: Categories.Other}
+						{ name: 'Web', value: Categories.Web },
+						{ name: 'Pwn', value: Categories.Pwn },
+						{ name: 'Crypto', value: Categories.Crypto },
+						{ name: 'Forensics', value: Categories.Forensics },
+						{ name: 'Rev', value: Categories.Rev },
+						{ name: 'Misc', value: Categories.Misc },
+						{ name: 'Blockchain', value: Categories.Blockchain },
+						{ name: 'Hardware', value: Categories.Hardware },
+						{ name: 'Cloud', value: Categories.Cloud },
+						{ name: 'Coding', value: Categories.Coding },
+						{ name: 'Other', value: Categories.Other }
 					],
 					required: true
 				},
