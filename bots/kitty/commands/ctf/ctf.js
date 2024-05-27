@@ -1,10 +1,10 @@
-const { ApplicationCommandOptionType, ChannelType } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
 const getCategory = require('../../../../utils/getCategory');
 const createChannel = require('../../../../utils/createChannel');
 const Guild = require('../../../../models/Guild');
 const Ctf = require('../../../../models/Ctf');
 const Challenge = require('../../../../models/Challenge');
-const { ctfActiveName, ctfArchivePrefix, ctfActiveChallengeName, ctfCompletedChallengeName } = require('../../../../config.json');
+const { ctfActiveName, ctfArchivePrefix } = require('../../../../config.json');
 
 module.exports = {
 	name: 'ctf',

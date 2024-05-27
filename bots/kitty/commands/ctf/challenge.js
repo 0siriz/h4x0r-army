@@ -1,11 +1,11 @@
-const { ApplicationCommandOptionType, MessageMentions: { users } } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
 const getCategory = require('../../../../utils/getCategory');
 const createChannel = require('../../../../utils/createChannel');
 const Guild = require('../../../../models/Guild');
 const Ctf = require('../../../../models/Ctf');
 const Challenge = require('../../../../models/Challenge');
 const User = require('../../../../models/User');
-const { ctfActiveName, ctfActiveChallengeName, ctfCompletedChallengeName, ctfPlayerRoleId } = require('../../../../config.json');
+const { ctfActiveChallengeName, ctfCompletedChallengeName } = require('../../../../config.json');
 
 const Categories = {
 	Web: 'web',
