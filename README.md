@@ -22,7 +22,7 @@ At the moment only kitty has some actual functionality, but the other bots will 
 	- [ ] See user level
 	- [ ] Award XP for solving (or co-solving) challenges
 - Fred (News bot)
-	- [ ] Scrape articles from [osinter](https://osinter.dk)
+	- [ ] Scrape articles
 	- [ ] Format the articles as embeds
 
 ## Credit and Inspiration
