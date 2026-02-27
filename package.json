@@ -13,7 +13,7 @@
   "author": "Osiriz",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "discord.js": "^14.22.1",
+    "discord.js": "^14.25.1",
     "mongoose": "^8.9.5"
   }
 }
