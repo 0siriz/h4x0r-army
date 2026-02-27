@@ -9,7 +9,7 @@ const { bots, mongoDBURI } = require('./config.json');
 		mongoose.set('strictQuery', false);
 		await mongoose.connect(mongoDBURI);
 		console.log('Connected to the DB');
-		
+
 		const botClients = new Map()
 
 		for (const bot of bots) {
@@ -26,12 +26,12 @@ const { bots, mongoDBURI } = require('./config.json');
 			});
 
 			botClients.set(bot.name, client);
-			
+
 			eventHandler(client, bot.clientId);
-			
+
 			client.login(bot.token);
 		}
-	} catch(err) {
+	} catch (err) {
 		console.error(`Error: ${err}`);
 	}
 })();
